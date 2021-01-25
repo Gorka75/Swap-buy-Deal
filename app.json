@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Forx",
+    "slug": "Swap-buy-Deal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/img/Forx.png",
+    "splash": {
+      "image": "./assets/chaire.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "permissions": [
+        "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "description": ""
+  }
+}
