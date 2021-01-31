@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import {isEmpty} from "lodash";
 import { useNavigation } from "@react-navigation/native";
@@ -26,7 +26,7 @@ export default function LoginForm(props) {
        } else {
            setLoading(true);
          firebase
-         .auth
+         .auth()
          .signInWithEmailAndPassword(formData.email, formData.password)
          .then(() => {
             setLoading(false);
@@ -74,7 +74,7 @@ export default function LoginForm(props) {
             buttonStyle={styles.btnLogin}
             onPress={onSubmit}
             />
-            <Loading isVisible={loading} text="loggin in" />
+            <Loading isVisible={loading} text="logging in" />
         </View>
     );
 }

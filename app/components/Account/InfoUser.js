@@ -3,84 +3,80 @@ import { StyleSheet, View, Text } from "react-native";
 import { Avatar } from "react-native-elements";
 import * as firebase from "firebase";
 import * as Permissions from "expo-permissions";
-import * as ImagePicker from  "expo-image-picker";
-
-
+import * as ImagePicker from "expo-image-picker";
 
 export default function InfoUser(props) {
     const { 
-      userInfo: { uid, photoURL, distplayName, email },
+      userInfo: { uid, photoURL, displayName, email },
       toastRef,
       setLoading,
       setLoadingText,
     } = props;
-    
-    const changeAvatar = async () => {
-        const resultPermission = await Permissions.askAsync(
-            Permissions.CAMERA_ROLL
-            );
-        const resultPermissionCamera = 
-        resultPermission.permissions.cameraRoll.status;
 
-        if(resultPermissionCamera === "denied"){
+        const changeAvatar = async () => {
+        const resultPermission = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+         const resultPermissionCamera = resultPermission.permissions.mediaLibrary.status;
+
+         if(resultPermissionCamera === "denied") {
              toastRef.current.show("It is mandatory to accept the gallery permissions");
-        } else {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                allowsEditing: true,
-                aspect: [4, 3],
-            });
+         } else {
+             const result = await ImagePicker.launchImageLibraryAsync({
+                 allowsEditing: true,
+                 aspect: [4, 3],
+             });
 
-            if(result.cancelled) {
+             if(result.cancelled) {
                 toasterRef.current.show("you have closed the selection of images");
-            } else {
+             } else {
                uploadImage(result.uri)
                .then(() => {
                    updatePhotoUrl();
-                })
-                .catch(() => {
-                    toastRef.current.show("Avatar update error");
-                });
-            }    
-        }
+               })
+               .catch(() => {
+                   toastRef.current.show("Error uploading the avatar");
+               });
+         }
+        } 
+};
+
+const uploadImage = async (uri) => {
+    setLoadingText("Updating Avatar");
+    setLoading(true);
+
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    
+    const ref = firebase.storage().ref().child(`avatar/${uid}`);
+    return ref.put(blob);
+};
+
+const updatePhotoUrl = () => {
+    firebase
+    .storage()
+    .ref(`avatar/${uid}`)
+    .getDownloadURL()
+    .then(async (response) => {
+        const update = {
+            photoURL: response,
+        };
+        await firebase.auth().currentUser.updateProfile(update);
+        setLoading(false);
+        
+      })
+      .catch(() => {
+        toastRef.current.show("Avatar update error");
+      });
+
     }; 
 
-
-    const uploadImage = async (uri) => {
-        setLoadingText("Avatar update");
-        setLoading(true);
-
-
-     const response = await fetch(uri);
-     const blob = await response.blob();
-
-     const ref = firebase.storage().ref().child(`avatar/${uid}`);
-     return ref.put(blob);
-    };
-    
-    const updatePhotoUrl = () => {
-        firebase
-        .storage()
-        .ref(`avatar/${uid}`)
-        .getDownloadURL()
-        .then(async (response) => {
-          const update = {
-              photoURL: response,
-          };
-          await firebase.auth().currentUser.updateProfile(update);
-          setLoading(false);
-        })
-        .catch(() => {
-            toastRef.current.show("Avatar update error");
-        });
-    };    
-
+ 
     return (
         <View style={styles.viewUserInfo}>
             <Avatar
             rounded
             size="large"
             showEditButton
-            onEditPress={ChangeAvatar}
+            onEditPress={changeAvatar}
             containerStyle={styles.userInfoAvatar}
             source={
                 photoURL

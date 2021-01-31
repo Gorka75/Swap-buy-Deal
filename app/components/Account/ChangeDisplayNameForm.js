@@ -1,13 +1,41 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Button } from "react-native-elements";
+import * as firebase from "firebase"; 
 
 export default function ChangeDisplayNameForm(props) {
-    const {displayName, setShowModal, toastRef } = props;
+    const { displayName, setShowModal, toastRef, setReloadUserInfo } = props;
     const [newDisplayName, setNewDisplayName] = useState(null);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    
 
     const onSubmit = () => {
-        console.log(newDisplayName);
+      setError(null);
+      if(!newDisplayName) {
+          setError("The name can not be empty");
+      } else if(displayName === newDisplayName) {
+          setError("The name must be different");
+      } else {
+          setIsLoading(true);
+          const update = {
+              displayName: newDisplayName,
+          };
+
+          firebase
+          .auth()
+          .currentUser.updateProfile(update)
+          .then(() => {
+              setIsLoading(false);
+              setReloadUserInfo(true);
+              setShowModal(false);
+              
+          })
+          .catch(() => {
+              setError("Error while Update");
+              setIsLoading(false);
+          });
+      }
     };
 
     return(
@@ -22,12 +50,14 @@ export default function ChangeDisplayNameForm(props) {
           }}
           defaultValue={displayName || ""}
           onChange={(e) => setNewDisplayName(e.nativeEvent.text)}
+          errorMessage={error}
           />
           <Button
           title="Change Name"
           containerStyle={styles.btnContainer}
           buttonStyle={styles.btn}
           onPress={onSubmit}
+          loading={isLoading}
           />
 
         </View>

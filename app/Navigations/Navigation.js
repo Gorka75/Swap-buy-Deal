@@ -2,9 +2,9 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-elements";
-import RestaurantsStack from "./RestaurantsStack";
+import ShopsStack from "./ShopsStack";
 import FavoritesStack from "./FavoritesStack";
-import TopRestaurantsStack from "./TopRestaurantsStack";
+import TopShopsStack from "./TopShopsStack";
 import SearchStack from "./SearchStack";
 import AccountStack from "./AccountStack";
 
@@ -15,7 +15,7 @@ export default function Navigation() {
     return (
         <NavigationContainer>
             <Tab.Navigator
-              initialRouteName="restaurants"
+              initialRouteName="shops"
               tabBarOptions={{
                 inactiveTinColor: "#646464",
                 activeTinColor: "#00a680",
@@ -25,9 +25,9 @@ export default function Navigation() {
               })}
               >
                 <Tab.Screen 
-                  name="restaurants" 
-                  component={RestaurantsStack} 
-                  options= {{ title: "Restaurants"}} 
+                  name="shops" 
+                  component={ShopsStack} 
+                  options= {{ title: "Shops"}} 
                 />
                 <Tab.Screen 
                   name="favorites" 
@@ -35,8 +35,8 @@ export default function Navigation() {
                   options= {{ title: "Favorites"}}
                 />
                 <Tab.Screen
-                name= "top-restaurants"
-                component={TopRestaurantsStack}
+                name= "top-shops"
+                component={TopShopsStack}
                 options= {{ title: "Top 5" }}
                 />
                 <Tab.Screen 
@@ -60,13 +60,13 @@ function screenOptions ( route, color) {
   let iconName;
 
   switch (route. name) {
-    case "restaurants":
+    case "shops":
       iconName = "compass-outline";
       break;
       case "favorites":
       iconName = "heart-outline";
       break;
-      case "top-restaurants":
+      case "top-shops":
       iconName = "star-outline";
       break;
       case "search":

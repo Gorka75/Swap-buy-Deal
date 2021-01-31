@@ -15,7 +15,7 @@ export default function UserGuest() {
         />
         <Text style={styles.title}>Check your profile</Text>
         <Text style={styles.description}>
-        How would you describe your favorite restaurant?
+        How would you describe your favorite shop?
         let us know how you feel about our places. 
          </Text>
          <View style={styles.viewBtn}>

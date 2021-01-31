@@ -15,7 +15,7 @@ export default function Modal(props) {
         overlayStyle={styles.overlay}
         onBackdropPress={closeModal}
         >
-            | {children}
+         {children}
         </Overlay>
     );
 }
