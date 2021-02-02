@@ -17,7 +17,7 @@ export default function AddShops(props) {
               navigation={navigation}
             />
             <Toast ref={toastRef} position="center" opacity={0.9} />
-            <Loading isVisible={isLoading} text="Shop cretion" />
+            <Loading isVisible={isLoading} text="Shop creation" />
         </View>
     );
 }

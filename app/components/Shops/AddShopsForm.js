@@ -6,7 +6,14 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
+import uuid from "random-uuid-v4";
 import Modal from "../Modal";
+
+import {firebaseApp} from "../../utils/firebase";
+import firebase from "firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 
 const widthScreen = Dimensions.get("window").width;
 
@@ -24,13 +31,66 @@ export default function AddShopsForm(props) {
      console.log(imagesSelected);
 
     const addShops = () => {
-        console.log("ok");
-       // console.log("shopsName: " + shopsName);
-        //console.log("shopsAddress: " + shopsAddress);
-       // console.log("shopsDescription: " + shopsDescription);
-       console.log(locationShop);
+        if(!shopsName || !shopsAddress || !shopsDescription) {
+            toastRef.current.show("All fields on this form are required");
+        } else if (size(imagesSelected) === 0) {
+            toastRef.current.show("The store must have at least one photo");
+        } else if (!locationShop) {
+            toastRef.current.show("It is mandatory to locate the store on the map");
+        } else {
+            setIsLoading(true);
+        uploadImageStorage().then(response => {
+             db.collection("Swap-buy-Deal")
+              .add({
+                  name: shopsName,
+                  address: shopsAddress,
+                  description: shopsDescription,
+                  location: locationShop,
+                  images: response,
+                  rating: 0,
+                  ratingTotal: 0,
+                  quantityVoting: 0,
+                  createAt: new Date(),
+                  createBy: firebase.auth().currentUser.uid,
+              })
+              .then(() => {
+                  setIsLoading(false);
+                  navigation.navigate("Shops");
+              })
+              .catch(() => {
+                  setIsLoading(false);
+                  toastRef.current.show(
+                      "Error when uploading the store, try again later"
+                  );
+              });
+
+        });
+        }
         
     };
+
+    const uploadImageStorage = async () => {
+        const imageBlob = [];
+
+        await Promise.all(
+           map(imagesSelected, async (image) => {
+            const response = await fetch(image);
+            const blob = await response.blob();
+            const ref = firebase.storage().ref("Swap-buy-Deal").child(uuid());
+            await ref.put(blob).then(async (result) => {
+              await firebase
+                       .storage()
+                       .ref(`Swap-buy-Deal/${result.metadata.name}`)
+                       .getDownloadURL()
+                       .then((photoUrl) => {
+                          imageBlob.push(photoUrl);
+                       });
+                    });
+                  })
+        );
+
+        return imageBlob;
+    }; 
 
     return (
         <ScrollView style={StyleSheet.scrollView}>
@@ -40,6 +100,7 @@ export default function AddShopsForm(props) {
           setShopsAddress={setShopsAddress}
           setShopsDescription={setShopsDescription}
           setIsVisibleMap={setIsVisibleMap}
+          locationShop={locationShop}
         />
         <UploadImage 
         toastRef={toastRef}
@@ -81,7 +142,8 @@ function FormAdd(props) {
         setShopsName, 
         setShopsAddress, 
         setShopsDescription,
-        setIsVisibleMap
+        setIsVisibleMap,
+        locationShop
     } = props;
 
     return (
@@ -98,7 +160,7 @@ function FormAdd(props) {
           rightIcon={{
               type: "material-community",
               name: "google-maps",
-              color: "#c2c2c2",
+              color: locationShop ? "#00a680" : "#c2c2c2",
               onPress: () => setIsVisibleMap(true),
           }}
           />
@@ -318,12 +380,14 @@ const styles = StyleSheet.create({
     },
     viewMapBtnContainerCancel: {
         paddingLeft: 5,
+        marginBottom: 40,
     },
     viewMapBtnCancel: {
         backgroundColor: "#a60d0d",
     },
     viewMapBtnContainerSave: {
         paddingRight: 5,
+        marginBottom: 40,
     },
     viewMapBtnSave: {
         backgroundColor: "#00a680",
