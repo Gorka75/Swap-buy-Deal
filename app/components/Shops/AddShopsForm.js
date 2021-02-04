@@ -9,7 +9,7 @@ import MapView from "react-native-maps";
 import uuid from "random-uuid-v4";
 import Modal from "../Modal";
 
-import {firebaseApp} from "../../utils/firebase";
+import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/storage";
 import "firebase/firestore";
@@ -26,7 +26,7 @@ export default function AddShopsForm(props) {
      const [shopsDescription, setShopsDescription] = useState("");
      const [imagesSelected, setImagesSelected] = useState([]);
      const [isVisibleMap, setIsVisibleMap] = useState(false);
-     const [locationShop, setLocationShop] = useState(null);
+     const [locationShops, setLocationShops] = useState(null);
 
      console.log(imagesSelected);
 
@@ -35,7 +35,7 @@ export default function AddShopsForm(props) {
             toastRef.current.show("All fields on this form are required");
         } else if (size(imagesSelected) === 0) {
             toastRef.current.show("The store must have at least one photo");
-        } else if (!locationShop) {
+        } else if (!locationShops) {
             toastRef.current.show("It is mandatory to locate the store on the map");
         } else {
             setIsLoading(true);
@@ -45,7 +45,7 @@ export default function AddShopsForm(props) {
                   name: shopsName,
                   address: shopsAddress,
                   description: shopsDescription,
-                  location: locationShop,
+                  location: locationShops,
                   images: response,
                   rating: 0,
                   ratingTotal: 0,
@@ -100,7 +100,7 @@ export default function AddShopsForm(props) {
           setShopsAddress={setShopsAddress}
           setShopsDescription={setShopsDescription}
           setIsVisibleMap={setIsVisibleMap}
-          locationShop={locationShop}
+          locationShops={locationShops}
         />
         <UploadImage 
         toastRef={toastRef}
@@ -115,7 +115,7 @@ export default function AddShopsForm(props) {
         <Map 
         isVisibleMap={isVisibleMap} 
         setIsVisibleMap={setIsVisibleMap} 
-        setLocationShop={setLocationShop}
+        setLocationShops={setLocationShops}
         toastRef={toastRef}
         />
         </ScrollView>
@@ -143,7 +143,7 @@ function FormAdd(props) {
         setShopsAddress, 
         setShopsDescription,
         setIsVisibleMap,
-        locationShop
+        locationShops
     } = props;
 
     return (
@@ -160,7 +160,7 @@ function FormAdd(props) {
           rightIcon={{
               type: "material-community",
               name: "google-maps",
-              color: locationShop ? "#00a680" : "#c2c2c2",
+              color: locationShops ? "#00a680" : "#c2c2c2",
               onPress: () => setIsVisibleMap(true),
           }}
           />
@@ -176,7 +176,7 @@ function FormAdd(props) {
 }
 
    function Map(props) {
-    const {isVisibleMap, setIsVisibleMap, setLocationShop, toastRef} = props;
+    const {isVisibleMap, setIsVisibleMap, setLocationShops, toastRef} = props;
     const [location, setLocation] = useState(null);
 
     useEffect(() => {
@@ -204,7 +204,7 @@ function FormAdd(props) {
     }, []);
 
     const confirmLocation = () => {
-        setLocationShop(location);
+        setLocationShops(location);
         toastRef.current.show("Location Saved");
         setIsVisibleMap(false);
     };

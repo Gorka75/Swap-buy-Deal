@@ -20,6 +20,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.gorka.SwapbuyDeal",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBNICAHBsPdVkVm4sTyMppEgnhvKnS063Q"
+        }
+      },
       "permissions": [
         "CAMERA_ROLL",
         "READ_EXTERNAL_STORAGE",
@@ -27,9 +33,10 @@
         "LOCATION",
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
-      ],
-      "package": "com.gorka.SwapbuyDeal"
-    },
+      ]
+     },
+     
     "description": ""
   }
 }
+
